@@ -1,6 +1,93 @@
-
-
 # Merian
+
+## React
+
+<https://nx.dev/getting-started/nx-and-react>
+
+npx create-nx-workspace@latest
+
+```shell
+C:\Users\timof\repos>npx create-nx-workspace@latest
+npx: installed 58 in 10.745s
+√ Workspace name (e.g., org name)     · merian
+√ What to create in the new workspace · react
+√ Application name                    · amp
+√ Default stylesheet format           · css
+C:\Users\timof\AppData\Roaming\npm-cache\_npx\18788\node_modules\create-nx-workspace\bin
+√ Use Nx Cloud? (It's free and doesn't require registration.) · No
+ > NX   Nx is creating your v14.0.2 workspace.
+   To make sure the command works reliably in all environments, and that the preset is applied correctly,
+   Nx will run "npm install" several times. Please wait.
+√ Installing dependencies with npm
+√ Nx has successfully created the workspace.
+ ———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+ >  NX   First time using Nx? Check out this interactive Nx tutorial.
+   https://nx.dev/react-tutorial/01-create-application
+   Prefer watching videos? Check out this free Nx course on Egghead.io.
+   https://egghead.io/playlists/scale-react-development-with-nx-4038
+```
+
+npx nx serve todos
+
+## Angular
+
+```shell
+>nx generate @nrwl/angular:app customer-portal --routing
+ENOENT: no such file or directory, open 'C:\Users\timof\repos\demo-app\packages\customer-portal\project.json'
+>nx serve customer-portal
+...
+>nx generate @nrwl/angular:app customer-portal --routing
+√ Which stylesheet format would you like to use? · scss
+UPDATE nx.json
+UPDATE package.json
+UPDATE .gitignore
+UPDATE workspace.json
+CREATE apps/customer-portal/.browserslistrc
+...
+```
+
+## The Core first then Angular approach fails
+
+There are different approaches to creating a workspace.  Some are tailored to a particular framework, and some are framework agnostic.  Creating a "core" workspace should make this workspace work for any type of framework.
+
+<https://nx.dev/getting-started/nx-core>
+
+```shell
+>npx create-nx-workspace@latest
+npx: installed 58 in 14.11s
+√ Workspace name (e.g., org name)     · demo-app
+√ What to create in the new workspace · core
+C:\Users\timof\AppData\Roaming\npm-cache\_npx\16348\node_modules\create-nx-workspace\bin
+√ Use Nx Cloud? (It's free and doesn't require registration.) · No
+ > NX   Nx is creating your v14.0.2 workspace.
+   To make sure the command works reliably in all environments, and that the preset is applied correctly,
+   Nx will run "npm install" several times. Please wait.
+√ Installing dependencies with npm
+√ Nx has successfully created the workspace.
+ —————————————————————————————————————————————————————————————————————————————————————
+ > NX   First time using Nx? Check out this interactive Nx tutorial.
+   <https://nx.dev/core-tutorial/01-create-blog>
+```
+
+Nx started out as an Angular-only affair.  It's creators were on the Angular team and left to focus on corporate-level issues when creating enterprise Angular apps.
+
+Maybe for this reason I have had issues using Angular in a core workspace.  The big difference is instead of an angular.json, there is a workspace.json.  There may be advice and plugins out there that don't work with this change, so understand when you go the multi-framework route, there is a bit more to worry about sometimes.
+
+There is actually [a section about splitting angular.json into multiple project.json files](https://nx.dev/getting-started/nx-and-angular#angularjson), one for each project.  I wish I had read that some time ago.
+
+*anything written about project.json or workspace.json applies to angular.json in the same way. For instance, everything in project.json and nx.json applies to angular.json in the same way.*
+
+First install the Angular plugin.
+
+npm install @nrwl/angular
+
+We run into this issue immediately when starting a new app:
+
+nx generate @nrwl/angular:app customer-portal --routing
+
+ENOENT: no such file or directory, open 'C:\Users\timof\repos\demo-app\packages\customer-portal\project.json'
+
+## Original Readme
 
 This project was generated using [Nx](https://nx.dev).
 

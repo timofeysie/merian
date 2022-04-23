@@ -2,6 +2,8 @@
   "version": 2,
   "projects": {
     "amp": "apps/amp",
-    "amp-e2e": "apps/amp-e2e"
+    "amp-e2e": "apps/amp-e2e",
+    "customer-portal": "apps/customer-portal",
+    "customer-portal-e2e": "apps/customer-portal-e2e"
   }
 }
