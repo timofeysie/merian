@@ -1,0 +1,28 @@
+{
+  "root": "apps/amp-e2e",
+  "sourceRoot": "apps/amp-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/amp-e2e/cypress.json",
+        "devServerTarget": "amp:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "amp:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/amp-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["amp"]
+}

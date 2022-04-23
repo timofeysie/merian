@@ -1,0 +1,80 @@
+{
+  "root": "apps/amp",
+  "sourceRoot": "apps/amp/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/amp",
+        "index": "apps/amp/src/index.html",
+        "baseHref": "/",
+        "main": "apps/amp/src/main.tsx",
+        "polyfills": "apps/amp/src/polyfills.ts",
+        "tsConfig": "apps/amp/tsconfig.app.json",
+        "assets": ["apps/amp/src/favicon.ico", "apps/amp/src/assets"],
+        "styles": ["apps/amp/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/amp/src/environments/environment.ts",
+              "with": "apps/amp/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "amp:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "amp:build:development"
+        },
+        "production": {
+          "buildTarget": "amp:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/amp/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/amp"],
+      "options": {
+        "jestConfig": "apps/amp/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
