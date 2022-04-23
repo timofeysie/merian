@@ -4,6 +4,10 @@
 
 <https://nx.dev/getting-started/nx-and-react>
 
+npm install -g nx
+
+Or use npx:
+
 npx create-nx-workspace@latest
 
 ```shell
@@ -86,6 +90,29 @@ We run into this issue immediately when starting a new app:
 nx generate @nrwl/angular:app customer-portal --routing
 
 ENOENT: no such file or directory, open 'C:\Users\timof\repos\demo-app\packages\customer-portal\project.json'
+
+## NextJS
+
+npm install --save-dev @nrwl/next
+
+nx g @nrwl/next:app sibylla
+
+### React CLI commands
+
+nx g @nrwl/next:lib my-new-lib
+nx g @nrwl/next:page my-new-page --project=my-new-app
+nx g @nrwl/next:component my-new-component --project=my-new-app
+nx serve sibylla --prod
+
+### The Nx React todo example
+
+<https://nx.dev/react-tutorial/01-create-application>
+
+We will use the my-new-app trash app to do this.
+
+By default, Nx uses Cypress to run E2E tests.
+
+nx e2e my-new-app -e2e --watch
 
 ## Original Readme
 

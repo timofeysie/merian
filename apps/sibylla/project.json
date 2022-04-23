@@ -1,0 +1,60 @@
+{
+  "root": "apps/sibylla",
+  "sourceRoot": "apps/sibylla",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "root": "apps/sibylla",
+        "outputPath": "dist/apps/sibylla"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "sibylla:build",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "sibylla:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "sibylla:build:production",
+          "dev": false
+        }
+      }
+    },
+    "export": {
+      "executor": "@nrwl/next:export",
+      "options": {
+        "buildTarget": "sibylla:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/sibylla"],
+      "options": {
+        "jestConfig": "apps/sibylla/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/sibylla/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  },
+  "tags": []
+}

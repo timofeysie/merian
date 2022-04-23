@@ -4,6 +4,10 @@
     "amp": "apps/amp",
     "amp-e2e": "apps/amp-e2e",
     "customer-portal": "apps/customer-portal",
-    "customer-portal-e2e": "apps/customer-portal-e2e"
+    "customer-portal-e2e": "apps/customer-portal-e2e",
+    "my-new-app": "apps/my-new-app",
+    "my-new-app-e2e": "apps/my-new-app-e2e",
+    "sibylla": "apps/sibylla",
+    "sibylla-e2e": "apps/sibylla-e2e"
   }
 }

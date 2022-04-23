@@ -1,0 +1,28 @@
+{
+  "root": "apps/sibylla-e2e",
+  "sourceRoot": "apps/sibylla-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/sibylla-e2e/cypress.json",
+        "devServerTarget": "sibylla:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "sibylla:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/sibylla-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["sibylla"]
+}
