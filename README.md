@@ -1,8 +1,24 @@
 # Merian
 
-## React
+## Workflow
 
-<https://nx.dev/getting-started/nx-and-react>
+```txt
+nx serve customer-portal // Angular admin app
+nx serve my-new-app --prod // NextJS AMP testbed
+nx serve sibylla --prod // NextJS AMP frontend
+```
+
+### Scaffolding
+
+```txt
+nx g @nrwl/next:lib my-new-lib
+nx g @nrwl/next:page my-new-page --project=my-new-app
+nx g @nrwl/next:component my-new-component --project=my-new-app
+```
+
+## React first workspace creation
+
+If a workspace is created with a React app to start following [this document](https://nx.dev/getting-started/nx-and-react).
 
 npm install -g nx
 
@@ -24,7 +40,7 @@ C:\Users\timof\AppData\Roaming\npm-cache\_npx\18788\node_modules\create-nx-works
    Nx will run "npm install" several times. Please wait.
 √ Installing dependencies with npm
 √ Nx has successfully created the workspace.
- ———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+ ——————————————————————————————————————————————————————————————————————
  >  NX   First time using Nx? Check out this interactive Nx tutorial.
    https://nx.dev/react-tutorial/01-create-application
    Prefer watching videos? Check out this free Nx course on Egghead.io.
@@ -35,10 +51,10 @@ npx nx serve todos
 
 ## Angular
 
+Add the Angular app:
+
 ```shell
 >nx generate @nrwl/angular:app customer-portal --routing
-ENOENT: no such file or directory, open 'C:\Users\timof\repos\demo-app\packages\customer-portal\project.json'
->nx serve customer-portal
 ...
 >nx generate @nrwl/angular:app customer-portal --routing
 √ Which stylesheet format would you like to use? · scss
@@ -50,7 +66,11 @@ CREATE apps/customer-portal/.browserslistrc
 ...
 ```
 
+nx serve customer-portal
+
 ## The Core first then Angular approach fails
+
+These are notes about the failed core workspace with Angular first approach.
 
 There are different approaches to creating a workspace.  Some are tailored to a particular framework, and some are framework agnostic.  Creating a "core" workspace should make this workspace work for any type of framework.
 
@@ -68,7 +88,7 @@ C:\Users\timof\AppData\Roaming\npm-cache\_npx\16348\node_modules\create-nx-works
    Nx will run "npm install" several times. Please wait.
 √ Installing dependencies with npm
 √ Nx has successfully created the workspace.
- —————————————————————————————————————————————————————————————————————————————————————
+ —————————————————————————————————————————————————————————————————————————————————
  > NX   First time using Nx? Check out this interactive Nx tutorial.
    <https://nx.dev/core-tutorial/01-create-blog>
 ```
@@ -90,6 +110,8 @@ We run into this issue immediately when starting a new app:
 nx generate @nrwl/angular:app customer-portal --routing
 
 ENOENT: no such file or directory, open 'C:\Users\timof\repos\demo-app\packages\customer-portal\project.json'
+
+I added some comments on [this GitHub on Nx](https://github.com/nrwl/nx/issues/8778#issuecomment-1107446490) for the issue, but it doesn't matter as going with the React project first solves the issue.
 
 ## NextJS
 
@@ -113,6 +135,67 @@ We will use the my-new-app trash app to do this.
 By default, Nx uses Cypress to run E2E tests.
 
 nx e2e my-new-app -e2e --watch
+
+Doesn't work.
+
+### AMP
+
+AMP inside a NextJS app.
+
+The [official docs](https://nextjs.org/docs/advanced-features/amp-support/introduction) point to this [GitHub example](https://github.com/vercel/next.js/tree/canary/examples/amp)
+
+Using the pages and components for that demonstrates using normal page (non-AMP), an AMP only page, and a hybrid AMP page.
+
+But there is an error in index.tsx:
+
+```html
+      <amp-img
+        alt="Mountains"
+```
+
+Property 'amp-img' does not exist on type 'JSX.IntrinsicElements'.ts(2339)
+No quick fixes available
+
+There are a few fixes available according to [these SO answers]():
+
+```tsx
+declare namespace JSX {
+ interface IntrinsicElements {
+  [elemName: string]: any;
+ }
+}
+```
+
+I'm not sure exactly where these would be used, but putting this in the index.tsx files doesn't work.
+
+Another answer says that this works:
+
+```tsx
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}
+```
+
+But neither of those are working for the index.tsx file.
+
+### Typescript and AMP
+
+<https://nextjs.org/docs/advanced-features/amp-support/typescript>
+
+There is a [road map discussion](https://nextjs.org/docs/advanced-features/amp-support/typescript) that is now closed.
+
+At the end of the discussion someone links to [this example](https://github.com/ampproject/amphtml/pull/37370):
+
+```ts
+import {compile} from './compile';
+
+[globalThis as any]('compile') = compile;
+globalThis.compile = compile;
+```
 
 ## Original Readme
 
