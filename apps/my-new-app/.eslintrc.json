@@ -6,6 +6,9 @@
     "next/core-web-vitals"
   ],
   "ignorePatterns": ["!**/*"],
+  "rules": {
+     "@typescript-eslint/ban-ts-ignore": "off"
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],

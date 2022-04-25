@@ -4,6 +4,7 @@
 
 ```txt
 nx serve customer-portal // Angular admin app
+nx build my-new-app
 nx serve my-new-app --prod // NextJS AMP testbed
 nx serve sibylla --prod // NextJS AMP frontend
 ```
@@ -196,6 +197,118 @@ import {compile} from './compile';
 [globalThis as any]('compile') = compile;
 globalThis.compile = compile;
 ```
+
+### Prod build failing
+
+```txt
+> nx run my-new-app:build:production
+
+Failed to compile.
+
+./pages/index.tsx:14:5
+Type error: JSX expressions must have one parent element.
+
+  12 |
+  13 |   return (
+> 14 |     <Layout>
+     |     ^
+  15 |       <Head>
+  16 |         <title>The Cat</title>
+  17 |       </Head>
+info  - Checking validity of types .
+ ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+ > NX   Ran target build for project my-new-app (4s)
+ ```
+
+After some attempts to ignore the errors, the nx serve is not having this issue also:
+
+```shell
+wait  - compiling...
+error - ./pages/index.tsx
+Error:
+  x Unexpected token `Layout`. Expected jsx identifier
+    ,----
+ 14 | <Layout>
+    :  ^^^^^^
+    `----
+
+Caused by:
+    0: failed to process input file
+    1: Syntax Error
+error - Error: Cannot find module 'C:\Users\timof\repos\merian\dist\apps\my-new-app\.next\server\pages\index.js'
+Require stack:
+- C:\Users\timof\repos\merian\node_modules\next\dist\server\require.js
+```
+
+Nx serve on vanilla NextJS app sibylla works fine.
+
+Tried about 15 different approaches to ignoring ts lint errors to no avail.  This is indeed a show-stopper.
+
+I'm not sure at what point the error changed to this:
+
+```shell
+JSX expressions must have one parent element.ts(2657)
+```
+
+Puttint <>...</> tags around it fixed the <Layout> tag error.
+
+The <amp-img> tag now has this:
+
+Property 'amp-img' does not exist on type 'JSX.IntrinsicElements'.ts(2339)
+
+And that solution hasn't actually fixed anything:
+
+```err
+Error:
+  x Expression expected
+    ,----
+ 14 | <>
+```
+
+But then this error:
+
+Unexpected token `Layout`. Expected jsx identifier
+
+The issue is, it's not recognizing the closing layout tag.  When it gets to the AMP tags, the parsing is failing.
+
+```html
+<amp-img>
+  <amp-img></amp-img>
+</amp-img>
+```
+
+If I rename the file to index.ts, then this is one of the errors:
+
+'Head' refers to a value, but is being used as a type here. Did you mean 'typeof Head'?ts(2749)
+
+If I rename the file to index.js, then this is one of the errors:
+
+JSX expressions must have one parent element.ts(2657)
+
+If I remove all the other html tags and leave only the AMO tags, then this I assume is the root cause of the situation:
+
+Property 'amp-img' does not exist on type 'JSX.IntrinsicElements'.ts(2339)
+
+According to this non-SO answer: *this did the trick for me*:
+
+```tsx
+declare global {
+   namespace JSX {
+     interface IntrinsicElements {
+       [elemName: string]: any;
+     }
+   }
+ }
+```
+
+This actually works to make that error above, but now, that whole global block has errors:
+
+ES2015 module syntax is preferred over custom TypeScript modules and namespaces.eslint@typescript-eslint/no-namespace
+
+Putting this at the top of the file solves the issue in a bad way, and allows the images to show, which is promising.  Lets put the other tags back and make it work with the other html tags as well.
+
+It took a bit of other fixing and then erasing the contents of the <p> tag to get the file to load again due to some un-needed demo text, and the file loads.  Worth committing this step.
 
 ## Original Readme
 
