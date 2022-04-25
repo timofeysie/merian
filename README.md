@@ -48,7 +48,7 @@ C:\Users\timof\AppData\Roaming\npm-cache\_npx\18788\node_modules\create-nx-works
    https://egghead.io/playlists/scale-react-development-with-nx-4038
 ```
 
-npx nx serve todos
+npx nx serve amp
 
 ## Angular
 
@@ -150,8 +150,9 @@ Using the pages and components for that demonstrates using normal page (non-AMP)
 But there is an error in index.tsx:
 
 ```html
-      <amp-img
-        alt="Mountains"
+<amp-img
+  alt="Mountains"
+  ...
 ```
 
 Property 'amp-img' does not exist on type 'JSX.IntrinsicElements'.ts(2339)
@@ -216,7 +217,7 @@ Type error: JSX expressions must have one parent element.
   16 |         <title>The Cat</title>
   17 |       </Head>
 info  - Checking validity of types .
- ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+ ——————————————————————————————————————————————————————————————————————————————————————
 
  > NX   Ran target build for project my-new-app (4s)
  ```
@@ -309,6 +310,142 @@ ES2015 module syntax is preferred over custom TypeScript modules and namespaces.
 Putting this at the top of the file solves the issue in a bad way, and allows the images to show, which is promising.  Lets put the other tags back and make it work with the other html tags as well.
 
 It took a bit of other fixing and then erasing the contents of the <p> tag to get the file to load again due to some un-needed demo text, and the file loads.  Worth committing this step.
+
+## Building a NextJS AMP app
+
+After solving the issues with the amp tags detailed above, the build is failing:
+
+```txt
+Amp Validation
+error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+
+/dog?amp=1  error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+
+AMP Validation caused the export to fail. https://nextjs.org/docs/messages/amp-export-validation        
+———————————————————————————————————————————————————————————————————————————————
+ >  NX   Ran target build for project my-new-app (28s)
+    ×    1/1 failed
+    √    0/1 succeeded [0 read from cache]
+```
+
+Do you think those who created the NextJS AMP plugin tested out their demo?
+
+Or maybe there is a Nx/NextJS build step missing?
+
+Anyhow, the simple approach is to move the style tag into the head tag.  That works somewhat, but there is still a failure:
+
+```txt
+Amp Validation
+/dog?amp=1  error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+/           error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+            error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+AMP Validation caused the export to fail. https://nextjs.org/docs/messages/amp-export-validation        
+ ———————————————————————————————————————————————————————————————————————————————————————
+ >  NX   Ran target build for project my-new-app (16s)
+    ×    1/1 failed
+    √    0/1 succeeded [0 read from cache]
+```
+
+Wait, that looks like the same error, so maybe the change made was not needed/didn't work.
+
+The only hint of where the error came from is: /dog?amp=1
+
+And actually, the styles put into the head are not working anyhow.  Maybe even the file wasn't being compiled.   I just saw this error:
+
+```err
+thread '<unnamed>' panicked at 'called `Option::unwrap()` on a `None` value', crates\styled_jsx\src\lib.rs:531:44
+error - ./pages/index.tsx
+Error: failed to process
+```
+
+I'm not sure how the styles for NextJS could be used for AMP.
+
+Anyhow, getting rid of the dog.js file and trying the build again also doesn't work.
+
+```txt
+> nx run my-new-app:build:production
+info  - Checking validity of types  
+info  - Creating an optimized production build
+info  - Compiled successfully
+info  - Collecting page data .events.js:352
+      throw er; // Unhandled 'error' event
+      ^
+Error: EPERM: operation not permitted, open 'C:\Users\timof\repos\merian\dist\apps\my-new-app\.next\trace'
+Emitted 'error' event on WriteStream instance at:
+    at internal/fs/streams.js:335:14
+    at FSReqCallback.oncomplete (fs.js:180:23) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'open',
+  path: 'C:\\Users\\timof\\repos\\merian\\dist\\apps\\my-new-app\\.next\\trace'
+}
+ ————————————————————————————————————————————————————————————————————————————————————
+ >  NX   Ran target build for project my-new-app (8s)
+    ×    1/1 failed
+    √    0/1 succeeded [0 read from cache]
+```
+
+I was about to raise a bug on the Nx Github, but then read [this on the Next.js site](https://github.com/vercel/next.js/issues/30564):
+
+*dev server should not be online while building, but building static page require API and my API's are running by express so the solution was to run a production mode and then build and restart the production again*
+
+I did indeed have the serve going.  So stopping that and we are back to an old error:
+
+```txt
+Amp Validation
+/  error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+   error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+   error  The parent tag of tag 'style amp-custom' is 'body', but it can only be 'head'.  https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml/#stylesheets
+AMP Validation caused the export to fail. https://nextjs.org/docs/messages/amp-export-validation        
+ ————————————————————————————————————————————————————————————————————————————————————
+ >  NX   Ran target build for project my-new-app (13s)
+    ×    1/1 failed
+    √    0/1 succeeded [0 read from cache]
+```
+
+I have a feeling this is related to the build step shown in the examples:
+
+```json
+"build": "next build",
+```
+
+Where would an issue about this be raised?  Nx?  Next.js? AMP?  The Nx Next.js plugin?  A separate Next.js AMP team project?  It's not clear at this point.
+
+Here is one option:
+
+[The plugin page](https://nx.dev/next/overview).
+
+It says *There is no need to build the library prior to using it. When you update your library, the Next.js application will automatically pick up the changes.*
+
+## NextJS AMP examples
+
+On the NextJS.org site, there are [three examples](https://nextjs.org/examples).
+
+- AMP First Boilerplate
+- Google AMP Story
+- Google AMP
+- [Example app with google analytics & amp](https://github.com/vercel/next.js/tree/canary/examples/with-google-analytics-amp)
+
+(I might note [the page](https://nextjs.org/examples) that has links to those examples has a vast array of popular integrations and React best-practice examples in general).
+
+I'm thinking that the last one there is what we are using.  It has the same two components:
+
+Byline.js
+Layout.js
+
+Those are components with styles, which is great for re-usability.  However, I'm not sure how they will make it into the head tag at build time.
+
+And, bear in mind these are NextJS examples, not Nx versions.  About a year ago, Nx started providing NextJS support (they call it Next.js, maybe we should also).  It's very possible that there may be major issues with trying to then also throw in AMP.
+
+I created [an issue on the Nx GitHub](https://github.com/nrwl/nx/issues/9988) detailing this issue.
+
+### AMP Story
+
+This is an interesting example.  Yes, it's designed for video, but could work for image and story posts as well.
+
+Being able to use the power of Nx with Next.js to create stories would be a great tool.
 
 ## Original Readme
 

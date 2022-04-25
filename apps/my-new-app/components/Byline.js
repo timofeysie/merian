@@ -4,7 +4,7 @@ export default function Byline({ author }) {
       <div className="byline">By {author}</div>
       <style jsx>{`
         .byline {
-          color: green;
+          color: orange;
           font-weight: bolder;
         }
       `}</style>
